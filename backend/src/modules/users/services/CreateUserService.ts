@@ -23,11 +23,9 @@ class CreateUserService {
 
   public async run({ name, email, password }: IRequestDTO): Promise<User> {
     const checkUserExists = await this.userRepository.findByEmail(email);
-
     if (checkUserExists) {
-      throw new AppError('Email address already used.', 400);
+      throw new AppError('Email address already used.', 401);
     }
-
     const hashPassword = await this.hashProvider.generateHash(password);
 
     const user = this.userRepository.create({

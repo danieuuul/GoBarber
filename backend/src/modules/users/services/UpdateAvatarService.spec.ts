@@ -6,14 +6,14 @@ import UpdateAvatarService from './UpdateAvatarService';
 
 let fakeUserRepository: FakeUserRepository;
 let fakeStorageProvider: FakeStorageProvider;
-let updateUserAvatar: UpdateAvatarService;
+let updateAvatar: UpdateAvatarService;
 
-describe('UpdateUserAvatar', () => {
+describe('UpdateAvatar', () => {
   beforeEach(() => {
     fakeUserRepository = new FakeUserRepository();
     fakeStorageProvider = new FakeStorageProvider();
 
-    updateUserAvatar = new UpdateAvatarService(
+    updateAvatar = new UpdateAvatarService(
       fakeUserRepository,
       fakeStorageProvider,
     );
@@ -26,7 +26,7 @@ describe('UpdateUserAvatar', () => {
       password: '123456',
     });
 
-    await updateUserAvatar.run({
+    await updateAvatar.run({
       user_id: user.id,
       avatarFilename: 'avatar.jpg',
     });
@@ -36,7 +36,7 @@ describe('UpdateUserAvatar', () => {
 
   it('should not be able to update avatar from non existing user', async () => {
     await expect(
-      updateUserAvatar.run({
+      updateAvatar.run({
         user_id: 'non-existing-user',
         avatarFilename: 'avatar.jpg',
       }),
@@ -52,12 +52,12 @@ describe('UpdateUserAvatar', () => {
       password: '123456',
     });
 
-    await updateUserAvatar.run({
+    await updateAvatar.run({
       user_id: user.id,
       avatarFilename: 'oldAvatar.jpg',
     });
 
-    await updateUserAvatar.run({
+    await updateAvatar.run({
       user_id: user.id,
       avatarFilename: 'newAvatar.jpg',
     });
