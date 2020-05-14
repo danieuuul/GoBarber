@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import multer from 'multer';
+import { celebrate, Segments, Joi } from 'celebrate';
 
 import uploadConfig from '@config/upload';
 
@@ -17,12 +18,30 @@ const upload = multer(uploadConfig);
 
 profileRouters.use(confirmAuthentication);
 
-profileRouters.get('/', async (request, response) =>
-  profileController.show(request, response),
-);
+profileRouters.get('/', profileController.show);
 
-profileRouters.put('/', async (request, response) =>
-  profileController.update(request, response),
+profileRouters.put(
+  '/',
+  celebrate({
+    [Segments.BODY]: {
+      name: Joi.string().required(),
+      email: Joi.string().email().required(),
+      old_password: Joi.string(),
+      password: Joi.string().when('old_password', {
+        is: Joi.exist(),
+        then: Joi.required(),
+        otherwise: Joi.forbidden(),
+      }),
+      password_confirmation: Joi.string()
+        .when('old_password', {
+          is: Joi.exist(),
+          then: Joi.required(),
+          otherwise: Joi.forbidden(),
+        })
+        .valid(Joi.ref('password')),
+    },
+  }),
+  profileController.update,
 );
 
 profileRouters.patch(
